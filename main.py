@@ -1,21 +1,24 @@
-import openai
+import anthropic
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-def chat_with_gpt(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}]
+def chat_with_claude(prompt):
+    response = client.messages.create(
+        model="claude-3-opus-20240229",
+        max_tokens=1000,
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
     )
-    return response.choices[0].messages.content.strip()
+    return response.content[0].text
 
 if __name__ == "__main__":
     while True:
         user_input = input("You: ")
         if user_input.lower() in ["quit", "exit", "bye"]:
             break
-        response = chat_with_gpt(user_input)
-        print("chatbot:",response)
+        response = chat_with_claude(user_input)
+        print("Claude:", response)
